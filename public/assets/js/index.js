@@ -35,7 +35,7 @@ const getNotes = () =>
     },
     }).then((res)=> res.json())
     .then((data)=>{
-      return data;
+      return console.log(`${data} \n Sucessful GET request.`);
      })
     .then((err)=> console.error(err));
 
@@ -46,6 +46,9 @@ const saveNote = (note) =>
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(note),
+  }).then((res)=> res.json())
+  .then((data)=>{
+    return console.log(`${data} \n Sucessful POST request.`)
   });
 
 const deleteNote = (id) =>

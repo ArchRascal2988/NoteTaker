@@ -12,6 +12,13 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static('public'));
 
 const readFromFile = util.promisify(fs.readFile);
+const deleteNote= (id) => {
+  let dbArr= json.parse(readFromFile("./db/db.json"));
+  for(note of dbArr){
+    if(note.id==id) dbArr.splice(note, 1);
+  }
+  writeToFile("./db/db.json", json.stringify(dbArr));
+};
 const writeToFile = (destination, content) =>
   fs.writeFile(destination, JSON.stringify(content, null, 4), (err) =>
     err ? console.error(err) : console.info(`\nData written to ${destination}`)
@@ -41,6 +48,14 @@ app.get("/notes", (req,res)=>{
 
 app.get("/notes/api/notes", (req,res)=>{
     readFromFile("./db/db.json").then((data)=> res.json(json.parse(data)));
+});
+
+app.post("/notes/api/notes", (req, res)=>{
+    readAndAppend(req.body, "./db/db.json").then((data)=> res.json(json.parse(data)));
+});
+
+app.delete("/notes/api/notes/:id", (req, res)=>{
+    deleteNote(req.params.id).then((data)=> res.json(json.parse(data)));
 });
 
 app.listen(PORT, ()=>{
