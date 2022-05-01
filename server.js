@@ -2,6 +2,7 @@ const fs= require("fs");
 const util= require("util");
 const path= require("path");
 const express= require("express");
+const uID= require("uuid");
 
 const PORT= process.env.PORT || 3001;
 
@@ -17,7 +18,7 @@ const deleteNote= (id) => {
   for(note of dbArr){
     if(note.id==id) dbArr.splice(note, 1);
   }
-  writeToFile("./db/db.json", json.stringify(dbArr));
+  writeToFile("./db/db.json", JSON.stringify(dbArr));
 };
 const writeToFile = (destination, content) =>
   fs.writeFile(destination, JSON.stringify(content, null, 4), (err) =>
@@ -47,15 +48,15 @@ app.get("/notes", (req,res)=>{
 });
 
 app.get("/notes/api/notes", (req,res)=>{
-    readFromFile("./db/db.json").then((data)=> res.json(json.parse(data)));
+    readFromFile("./db/db.json").then((data)=> res.json(JSON.parse(data)));
 });
 
 app.post("/notes/api/notes", (req, res)=>{
-    readAndAppend(req.body, "./db/db.json").then((data)=> res.json(json.parse(data)));
+    readAndAppend(req.body, "./db/db.json").then((data)=> res.json(JSON.parse(data)));
 });
 
 app.delete("/notes/api/notes/:id", (req, res)=>{
-    deleteNote(req.params.id).then((data)=> res.json(json.parse(data)));
+    deleteNote(req.params.id).then((data)=> res.json(JSON.parse(data)));
 });
 
 app.listen(PORT, ()=>{

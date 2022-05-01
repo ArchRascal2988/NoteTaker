@@ -1,5 +1,3 @@
-const uID= require("uniqid");
-
 let noteTitle;
 let noteText;
 let saveNoteBtn;
@@ -28,19 +26,20 @@ const hide = (elem) => {
 let activeNote = {};
 
 const getNotes = () =>
-  fetch('/api/notes', {
+  fetch('/notes/api/notes', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
     }).then((res)=> res.json())
     .then((data)=>{
-      return console.log(`${data} \n Sucessful GET request.`);
+      console.log(`${data} \n Sucessful GET request.`)
+      return data;
      })
-    .then((err)=> console.error(err));
+    .catch((err)=> console.error(err));
 
 const saveNote = (note) =>
-  fetch('/api/notes', {
+  fetch('/notes/api/notes', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -48,16 +47,21 @@ const saveNote = (note) =>
     body: JSON.stringify(note),
   }).then((res)=> res.json())
   .then((data)=>{
-    return console.log(`${data} \n Sucessful POST request.`)
-  });
+    console.log(`${data} \n Sucessful POST request.`)
+    return data;
+  }).catch((err)=> console.error(err));
 
 const deleteNote = (id) =>
-  fetch(`/api/notes/${id}`, {
+  fetch(`/notes/api/notes/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
-  });
+  }).then((res)=> res.json())
+  .then((data)=>{
+    console.log(`${data} \n Sucessful DELETE request.`);
+    return data; 
+  }).catch((err)=> console.error(err));
 
 const renderActiveNote = () => {
   hide(saveNoteBtn);
@@ -79,7 +83,7 @@ const handleNoteSave = () => {
   const newNote = {
     title: noteTitle.value,
     text: noteText.value,
-    id: uID.uniqid()
+    id: Math.floor(Math.random()*1000)
   };
   saveNote(newNote).then(() => {
     getAndRenderNotes();
@@ -128,7 +132,7 @@ const handleRenderSaveBtn = () => {
 
 // Render the list of note titles
 const renderNoteList = async (notes) => {
-  let jsonNotes = await notes.json();
+  let jsonNotes = notes;
   if (window.location.pathname === '/notes') {
     noteList.forEach((el) => (el.innerHTML = ''));
   }
@@ -181,7 +185,7 @@ const renderNoteList = async (notes) => {
 };
 
 // Gets notes from the db and renders them to the sidebar
-const getAndRenderNotes = () => getNotes().then(renderNoteList);
+const getAndRenderNotes = () => getNotes().then((data)=> renderNoteList(data));
 
 if (window.location.pathname === '/notes') {
   saveNoteBtn.addEventListener('click', handleNoteSave);
